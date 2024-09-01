@@ -3,3 +3,4 @@ nm
 bash
 python-nmap
 scapy
+rich
