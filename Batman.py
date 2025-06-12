@@ -1,28 +1,16 @@
 #!/usr/bin/python3
 import os
-import nmap
 import socket
 from rich.console import Console
-import sys
 import requests
-from colorama import Fore, Style, init
 from scapy.layers.inet import IP, ICMP
 from scapy.sendrecv import sr1
+import nmap
 
 console = Console()
 
-crack = f"""
-               \033[34m,---.   ,--.--------.         \033[33m___    ,---.      .-.\033[37m_       
-    \033[34m_..---.  .--.'  \ /==/,  -   , -\ \033[33m.-._ .'=.'\ .--.'  \    /==/ \  .-._\033[37m  
-  \033[34m.' .'.-. \ \==\-/\ \\==\.-.  - ,-./  \033[33m==/ \|==|  |\==\-/\ \   |==|, \/ /, /\033[37m 
- \033[34m/==/- '=' / /==/-|_\ |`--`\==\- \   \033[33m|==|,|  / - |/==/-|_\ |  |==|-  \|  |\033[37m  
- \033[34m|==|-,   '  \==\,   - \    \==\_ \  \033[33m|==|  \/  , |\==\,   - \ |==| ,  | -|\033[37m  
- \033[34m|==|  .=. \ /==/ -   ,|    |==|- |  \033[33m|==|- ,   _ |/==/ -   ,| |==| -   _ |\033[37m  
- \033[34m/==/- '=' ,/==/-  /\ - \   |==|, |  \033[33m|==| _ /\   /==/-  /\ - \|==|  /\ , |\033[37m  
-\033[34m|==|   -   /\==\ _.\=\.-'   /==/ -/  \033[33m/==/  / / , |==\ _.\=\.-'/==/, | |- |\033[37m  
-\033[34m`-._`.___,'  `--`           `--`--`  \033[33m`--`./  `--` `--`        `--`./  `--`\033[37m  
-  
-+\033[34mBatman\033[33m Framework\033[37m
+crack = """
+033[34mBatman\033[33m Framework\033[37m
 +by \033[31mkstacks\033[37m
 +telegram @ksstacks\033[37m    
 """
@@ -65,6 +53,7 @@ traceroute = """
 Usage:
 traceroute           | Perform a traceroute (default 30 hops).
 """
+
 helpcmd = ["help"]
 scancmd = ["scan", "scan -h", "scan --help", "scan -sn", "scan -s", "scan -v", "scan -f", "scan -m", "scan -a"]
 reversecmd = ["reverse-ip", "reverse-ip -h", "reverse-ip --help", "reverse-ip -l"]
@@ -72,7 +61,7 @@ iplookupcmd = ["ip-lookup", "ip-lookup -h", "ip-lookup --help", "ip-lookup -l"]
 traceroutecmd = ["traceroute -h", "traceroute --help", "traceroute"]
 
 # Replace 'your_ipinfo_api_key' with your actual API key from ipinfo.io
-IPINFO_API_KEY = 'API'
+IPINFO_API_KEY = '15b5a7275dc9ce'
 
 
 def check_sudo():
