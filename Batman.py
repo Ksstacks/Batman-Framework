@@ -1,18 +1,24 @@
 #!/usr/bin/python3
 import os
+import nmap
 import socket
 from rich.console import Console
+import sys
 import requests
+from colorama import Fore, Style, init
 from scapy.layers.inet import IP, ICMP
 from scapy.sendrecv import sr1
-import nmap
 
 console = Console()
 
+warn = "\033[31mMake sure to run it in your python virtual enviorment in a root shell.\033[37m"
+venvupdate = "\033[31mDont forget about python-venv. It will be a safer way to install your pip modules!\033[37m"
+dontforgetaboutnmap = "\033[31mDont Forget about nmap! Got to learn it!\033[37m"
+
 crack = """
-033[34mBatman\033[33m Framework\033[37m
-+by \033[31mkstacks\033[37m
-+telegram @ksstacks\033[37m    
+//+\033[34mBatman\033[33m Framework\033[37m//
+//+by \033[31mkstacks\033[37m//
+//+telegram @ksstacks//
 """
 
 helph = """
@@ -54,20 +60,20 @@ Usage:
 traceroute           | Perform a traceroute (default 30 hops).
 """
 
-helpcmd = ["help"]
-scancmd = ["scan", "scan -h", "scan --help", "scan -sn", "scan -s", "scan -v", "scan -f", "scan -m", "scan -a"]
-reversecmd = ["reverse-ip", "reverse-ip -h", "reverse-ip --help", "reverse-ip -l"]
-iplookupcmd = ["ip-lookup", "ip-lookup -h", "ip-lookup --help", "ip-lookup -l"]
-traceroutecmd = ["traceroute -h", "traceroute --help", "traceroute"]
+reverse_dns = """
+Usage:
+reverse-dns          | Preforms a reverse dns lookup
+"""
+
+help_cmd = ["help"]
+scan_cmd = ["scan", "scan -h", "scan --help", "scan -sn", "scan -s", "scan -v", "scan -f", "scan -m", "scan -a"]
+reverse_cmd = ["reverse-ip", "reverse-ip -h", "reverse-ip --help", "reverse-ip -l"]
+ip_lookup_cmd = ["ip-lookup", "ip-lookup -h", "ip-lookup --help", "ip-lookup -l"]
+traceroute_cmd = ["traceroute -h", "traceroute --help", "traceroute"]
+reverse_dns_cmd = ["reverse-dns -h", "reverse-dns --help", "reverse-dns"]
 
 # Replace 'your_ipinfo_api_key' with your actual API key from ipinfo.io
-IPINFO_API_KEY = '15b5a7275dc9ce'
-
-
-def check_sudo():
-    if os.geteuid() != 0:
-        console.print("This script must be run as root. Please use sudo.", style="bold red")
-        sys.exit(1)
+IPINFO_API_KEY = 'API'
 
 def get_local_ip():
     try:
@@ -274,23 +280,32 @@ def traceroute_run(ip, hops):
     console.print(output, style="bold underline")
     save_output(output)
 
+def reverse_dns(domain_name):
+    try:
+        ip_address = socket.gethostbyname(domain_name)
+        print(f'The IP address of {domain_name} is {ip_address}')
+    except socket.gaierror:
+        print(f'Could not resolve the domain: {domain_name}')
+
 def main():
-    check_sudo()
+    print(warn)
+    print(venvupdate)
+    print(dontforgetaboutnmap)
     print(crack)
     while True:
         command = input("~$ ").strip()
-        if command in helpcmd:
+        if command in help_cmd:
             print_help()
-        elif command in scancmd[:3]:
+        elif command in scan_cmd[:3]:
             console.print(scanh)
-        elif command == scancmd[3]:
+        elif command == scan_cmd[3]:
             host = input("Host: ").strip()
             if not host:
                 console.print("No host specified")
             else:
                 console.print("Scanning...")
                 scan_network(host)
-        elif command == scancmd[4]:
+        elif command == scan_cmd[4]:
             host = input("Host: ").strip()
             ports = input("Ports: ").strip()
             if not ports:
@@ -300,7 +315,7 @@ def main():
             else:
                 console.print("Performing stealth scan...")
                 stealth_scan(host, ports)
-        elif command == scancmd[5]:
+        elif command == scan_cmd[5]:
             host = input("Host: ").strip()
             ports = input("Ports: ").strip()
             if not ports:
@@ -310,7 +325,7 @@ def main():
             else:
                 console.print("Performing version scan...")
                 version_scan(host, ports)
-        elif command == scancmd[6]:
+        elif command == scan_cmd[6]:
             host = input("Host: ").strip()
             ports = input("Ports: ").strip()
             if not ports:
@@ -320,7 +335,7 @@ def main():
             else:
                 console.print("Performing fragment scan...")
                 frag_scan(host, ports)
-        elif command == scancmd[7]:
+        elif command == scan_cmd[7]:
             mac = input("Mac (optional): ").strip()
             host = input("Host: ").strip()
             if not mac:
@@ -335,7 +350,7 @@ def main():
             else:
                 console.print("Performing Mac spoof...")
                 mac_scan(mac, host, vendor, ports)
-        elif command == scancmd[8]:
+        elif command == scan_cmd[8]:
             ip = input("Host: ").strip()
             ports = input("Ports: ").strip()
             if not ports:
@@ -348,9 +363,9 @@ def main():
                 console.print("Performing traceroute...")
                 hops = 31
                 traceroute_run(ip, hops)
-        elif command in reversecmd[:3]:
+        elif command in reverse_cmd[:3]:
             console.print(reverseh)
-        elif command == reversecmd[3]:
+        elif command == reverse_cmd[3]:
             ip = input("Host: ").strip()
             if not ports:
                 ports = "1-1000"
@@ -359,9 +374,9 @@ def main():
             else:
                 console.print("Performing reverse IP lookup...")
                 reverse_ip_lookup(ip)
-        elif command in iplookupcmd[:3]:
+        elif command in ip_lookup_cmd[:3]:
             console.print(iplookuph)
-        elif command == iplookupcmd[3]:
+        elif command == ip_lookup_cmd[3]:
             ip = input("Host: ").strip()
             if not ip:
                 console.print("No IP address specified")
@@ -375,9 +390,9 @@ def main():
                     traceroute_run(ip, hops)
                 else:
                     console.print("~$ ")
-        elif command == traceroutecmd[:2]:
+        elif command == traceroute_cmd[:2]:
             console.print(traceroute)
-        elif command == traceroutecmd[2]:
+        elif command == traceroute_cmd[2]:
             ip = input("Host: ").strip()
             hops = input("Hops(default 30): ").strip()
             if not ip:
@@ -392,6 +407,11 @@ def main():
                     hops = hops + 1
                     hoped = int(hops)
                     traceroute_run(ip, hops)
+        elif command == reverse_dns_cmd[:2]:
+            print(reverse_dns)
+        elif command == reverse_dns_cmd[2]:
+            reverseip = input("Website DNS: ")
+            reverse_dns(reverseip)
         elif command == "clear":
             clear_screen()
             print(crack)

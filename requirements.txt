@@ -1,6 +1,4 @@
-clang
-nm
-bash
-python-nmap
-scapy
+clang 
+python-nmap 
+scapy 
 rich
