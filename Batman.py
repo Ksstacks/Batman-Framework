@@ -27,6 +27,7 @@ Commands:
 - scan               | Nmap port scanning
 - reverse-ip         | Reverse IP and MAC lookup
 - ip-lookup          | IP lookup and location
+- reverse-dns        | Look up a domains ip
 - traceroute         | IP traceroute
 - clear              | Clear the screen
 - exit               | Exit framework
