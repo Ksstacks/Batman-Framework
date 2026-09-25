@@ -2,3 +2,5 @@ clang
 python-nmap 
 scapy 
 rich
+requests
+colorama

@@ -109,7 +109,7 @@ def scan_network(host):
     nm = nmap.PortScanner()
     nm.scan(hosts=host + '/24', arguments='-sn -Pn')
     hosts_list = [(x, nm[x]['status']['state'], nm[x].hostname(), nm[x]['addresses'].get('mac', 'N/A')) for x in nm.all_hosts()]
-    
+
     output = "\nScan Results:\n\n"
     for host, status, hostname, mac in hosts_list:
         if status == 'up':
@@ -201,8 +201,8 @@ def mac_scan(mac, host, vendor, ports):
             output = f"Mac Spoof Results for {host}:\n\n"
             for proto in nm[host].all_protocols():
                 lport = nm[host][proto].keys()
-                for prefix in lport:
-                    state = nm[mac][host][proto][vendor]['state']
+                for port in lport:
+                    state = nm[host][proto][port]['state']
                     output += f"Port: {port}, State: {state}\n"
             console.print(output, style="bold underline")
             save_output(output)  # Call save_output when output is defined
@@ -254,10 +254,10 @@ def ip_lookup(ip):
         data = response.json()
         loc = data.get('loc', 'N/A')
         latitude, longitude = loc.split(',') if loc != 'N/A' else ('N/A', 'N/A')
-        
+
         output = (f"IP: {data.get('ip')}\nHostname: {data.get('hostname')}\nCity: {data.get('city')}\nRegion: {data.get('region')}\nCountry: {data.get('country')}\n"
                   f"Location: {loc}\nLatitude: {latitude}\nLongitude: {longitude}\nOrg: {data.get('org')}\nCarrier: {data.get('carrier', 'N/A')}")
-        
+
         console.print(output)
         save_output(output)
     except Exception as e:
@@ -266,9 +266,7 @@ def ip_lookup(ip):
 def traceroute_run(ip, hops):
     output = "Traceroute results:\n"
     ttl = 1
-    i = 0
-    for i in range(hops):
-        i = i + 1
+    for _ in range(hops):
         pkt = IP(dst=ip, ttl=ttl) / ICMP()
         reply = sr1(pkt, verbose=0, timeout=1)
         if reply is None:
@@ -339,6 +337,7 @@ def main():
         elif command == scan_cmd[7]:
             mac = input("Mac (optional): ").strip()
             host = input("Host: ").strip()
+            vendor = ""
             if not mac:
                 vendor = input("vendor: ").strip()
             ports = input("Ports: ").strip()
@@ -346,7 +345,7 @@ def main():
                 ports = "1-1000"
             if not host:
                 console.print("No host specified")
-            if not mac and not vendor:
+            elif not mac and not vendor:
                 console.print("Mac or vendor must be specified")
             else:
                 console.print("Performing Mac spoof...")
@@ -368,8 +367,6 @@ def main():
             console.print(reverseh)
         elif command == reverse_cmd[3]:
             ip = input("Host: ").strip()
-            if not ports:
-                ports = "1-1000"
             if not ip:
                 console.print("No IP address specified")
             else:
@@ -391,7 +388,7 @@ def main():
                     traceroute_run(ip, hops)
                 else:
                     console.print("~$ ")
-        elif command == traceroute_cmd[:2]:
+        elif command in traceroute_cmd[:2]:
             console.print(traceroute)
         elif command == traceroute_cmd[2]:
             ip = input("Host: ").strip()
@@ -402,13 +399,10 @@ def main():
                 console.print("Performing IP traceroute...")
                 if not hops:
                     hops = 31
-                    hops = int(hops)
-                    traceroute_run(ip, hops)
                 else:
-                    hops = hops + 1
-                    hoped = int(hops)
-                    traceroute_run(ip, hops)
-        elif command == reverse_dns_cmd[:2]:
+                    hops = int(hops) + 1
+                traceroute_run(ip, hops)
+        elif command in reverse_dns_cmd[:2]:
             print(reverse_dns)
         elif command == reverse_dns_cmd[2]:
             reverseip = input("Website DNS: ")
